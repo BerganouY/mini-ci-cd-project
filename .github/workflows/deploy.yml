@@ -138,17 +138,7 @@ jobs:
             echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> backend/.env
             echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> backend/.env
 
-            # 4. Initialize Database
-            source backend/.env
-            # Create a temporary, modified init.sql file
-            cp database/init.sql /tmp/init.sql
-            sed -i "s/your_username_here/$DATABASE_USERNAME/" /tmp/init.sql
-            sed -i "s/your_password_here/$DATABASE_PASSWORD/" /tmp/init.sql
-            # Add a delay to give the database time to be ready and services to start
-            echo "Waiting for the database to be ready..."
-            sleep 30 # Increased sleep for more robustness
-            mysql -h $DATABASE_HOST -u root -p'${{ secrets.DB_ROOT_PASSWORD }}' < /tmp/init.sql
-            rm /tmp/init.sql
+
 
             # 5. Configure Services (Systemd & Nginx)
             sudo cp backend/deploy/app.service /etc/systemd/system/
