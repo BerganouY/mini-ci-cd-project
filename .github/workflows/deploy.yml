@@ -55,7 +55,7 @@ jobs:
             aws cloudformation wait stack-delete-complete --stack-name mini-sg
             echo "Stack deleted."
           fi
-          aws cloudformation deploy --stack-name mini-sg --template-file cloudformation/2-security.yml
+          aws cloudformation deploy --stack-name mini-sg --template-file cloudformation/2-security-groups.yml
 
       - name: Deploy Compute
         run: |
