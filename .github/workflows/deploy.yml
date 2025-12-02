@@ -121,7 +121,13 @@ jobs:
             echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> backend/.env
             echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> backend/.env
 
-            # 4. Configure Services (Systemd & Nginx)
+            # 4. Initialize Database
+            source backend/.env
+            sed -i "s/your_username_here/$DATABASE_USERNAME/" database/init.sql
+            sed -i "s/your_password_here/$DATABASE_PASSWORD/" database/init.sql
+            mysql -h $DATABASE_HOST -u $DATABASE_USERNAME -p$DATABASE_PASSWORD < database/init.sql
+
+            # 5. Configure Services (Systemd & Nginx)
             sudo cp backend/deploy/app.service /etc/systemd/system/
             sudo cp backend/deploy/nginx_app.conf /etc/nginx/sites-available/app
             
@@ -129,7 +135,7 @@ jobs:
             sudo ln -s /etc/nginx/sites-available/app /etc/nginx/sites-enabled/ || true
             sudo rm /etc/nginx/sites-enabled/default || true
 
-            # 5. Restart Services
+            # 6. Restart Services
             sudo systemctl daemon-reload
             sudo systemctl enable app
             sudo systemctl restart app

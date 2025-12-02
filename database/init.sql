@@ -7,11 +7,11 @@ CREATE DATABASE IF NOT EXISTS carnet_db;
 
 -- 2. Create the Application User
 -- We use '%' to allow connections from any IP (required because WebApp and DB are on different servers)
-CREATE USER IF NOT EXISTS 'carnet_user'@'%' IDENTIFIED BY 'your_password_here';
+CREATE USER IF NOT EXISTS 'your_username_here'@'%' IDENTIFIED BY 'your_password_here';
 
 -- 3. Grant Permissions
 -- Grant only the necessary privileges to the application user
-GRANT SELECT, INSERT, UPDATE, DELETE ON carnet_db.* TO 'carnet_user'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE ON carnet_db.* TO 'your_username_here'@'%';
 
 -- 4. Apply Changes
 FLUSH PRIVILEGES;
