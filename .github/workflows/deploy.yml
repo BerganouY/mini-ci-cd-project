@@ -25,18 +25,49 @@ jobs:
 
       # --- INFRASTRUCTURE DEPLOYMENT ---
       - name: Deploy Prerequisites
-        run: aws cloudformation deploy --stack-name mini-prerequisites --template-file cloudformation/0-prerequisites.yml
+        run: |
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-prerequisites --query "Stacks[0].StackStatus" --output text 2>/dev/null)
+          if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
+            echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
+            aws cloudformation delete-stack --stack-name mini-prerequisites
+            aws cloudformation wait stack-delete-complete --stack-name mini-prerequisites
+            echo "Stack deleted."
+          fi
+          aws cloudformation deploy --stack-name mini-prerequisites --template-file cloudformation/0-prerequisites.yml
 
       - name: Deploy Network
-        run: aws cloudformation deploy --stack-name mini-net --template-file cloudformation/1-vpc-network.yml
+        run: |
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-net --query "Stacks[0].StackStatus" --output text 2>/dev/null)
+          if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
+            echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
+            aws cloudformation delete-stack --stack-name mini-net
+            aws cloudformation wait stack-delete-complete --stack-name mini-net
+            echo "Stack deleted."
+          fi
+          aws cloudformation deploy --stack-name mini-net --template-file cloudformation/1-vpc-network.yml
 
       - name: Deploy Security
-        run: aws cloudformation deploy --stack-name mini-sg --template-file cloudformation/2-security.yml
+        run: |
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-sg --query "Stacks[0].StackStatus" --output text 2>/dev/null)
+          if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
+            echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
+            aws cloudformation delete-stack --stack-name mini-sg
+            aws cloudformation wait stack-delete-complete --stack-name mini-sg
+            echo "Stack deleted."
+          fi
+          aws cloudformation deploy --stack-name mini-sg --template-file cloudformation/2-security.yml
 
       - name: Deploy Compute
-        run: >
-          aws cloudformation deploy --stack-name mini-compute
-          --template-file cloudformation/4-compute.yml
+        run: |
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].StackStatus" --output text 2>/dev/null)
+          if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
+            echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
+            aws cloudformation delete-stack --stack-name mini-compute
+            aws cloudformation wait stack-delete-complete --stack-name mini-compute
+            echo "Stack deleted."
+          fi
+          aws cloudformation deploy --stack-name mini-compute \
+          --template-file cloudformation/4-compute.yml \
           --parameter-overrides KeyName=mini-project-key FirstRun=${{ github.event.inputs.first_run }}
 
       # --- GET IPS FOR DEPLOYMENT ---
