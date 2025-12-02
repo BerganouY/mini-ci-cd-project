@@ -133,6 +133,7 @@ jobs:
             sudo systemctl daemon-reload
             sudo systemctl enable app
             sudo systemctl restart app
+            sudo systemctl status app
             sudo systemctl restart nginx
 
       # --- BAKE AMI ---
