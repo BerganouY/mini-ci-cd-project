@@ -99,7 +99,15 @@ Resources:
           # 3. Restart to apply config
           systemctl restart mariadb
 
-          # 4. Set a password for the root user.
+          # 4. Wait for MariaDB to be ready
+          echo "Waiting for MariaDB to start..."
+          until mysql -h 127.0.0.1 -u root -p"${DBRootPassword}" -e "SELECT 1;" > /dev/null 2>&1; do
+            sleep 5
+            echo "MariaDB not yet ready, waiting..."
+          done
+          echo "MariaDB is ready."
+
+          # 5. Set a password for the root user.
           mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DBRootPassword}';"
           mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DBRootPassword}' WITH GRANT OPTION;"
           mysql -e "FLUSH PRIVILEGES;"
