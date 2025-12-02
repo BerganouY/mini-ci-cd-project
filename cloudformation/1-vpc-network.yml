@@ -25,7 +25,7 @@ Resources:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: true
-      AvailabilityZone: "eu-west-3a"
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
       Tags: [{Key: Name, Value: "public-subnet"}]
 
   # Private Subnet (Database)
@@ -34,7 +34,7 @@ Resources:
     Properties:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.2.0/24
-      AvailabilityZone: "eu-west-3a"
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
       Tags: [{Key: Name, Value: "private-subnet"}]
 
   # NAT Gateway (Essential for Private DB to install MariaDB)
