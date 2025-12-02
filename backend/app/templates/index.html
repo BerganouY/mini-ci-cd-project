@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <h1>Bienvenue sur le carnet !</h1>
+    <p class="lead">Laissez un message de bienvenue.</p>
+</div>
+<div class="alert alert-light text-center" role="alert" style="background-color: #fff0f5; border-color: #e0bbee; color: #58375c;">
+    <h4 class="alert-heading">👶 C'est la fête ! 🎉</h4>
+    <p>Notre petit trésor est arrivé, remplissant nos cœurs d'un bonheur infini. <br>
+       Merci de partager votre amour et vos vœux en laissant un mot sur ce carnet.</p>
+</div>
+
+<div class="row">
+    {% if show_form %}
+    <div class="col-lg-4 mb-4">
+        <div class="card p-3">
+            <h3>Laissez votre message</h3>
+            <form method="POST" action="" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.content.label(class="form-label") }}
+                    {{ form.content(class="form-control" + (" is-invalid" if form.content.errors else ""), rows=4) }}
+                    {% for error in form.content.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                {% if current_user.id == 2 %}
+                <div class="mb-3">
+                    {{ form.first_name.label(class="form-label") }}
+                    {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else "")) }}
+                    {% for error in form.first_name.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    {{ form.last_name.label(class="form-label") }}
+                    {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else "")) }}
+                    {% for error in form.last_name.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-custom-pink") }}
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="{% if show_form %}col-lg-8{% else %}col-lg-12{% endif %}">
+        <h2>Messages Reçus</h2>
+        {% if messages %}
+            {% for message in messages %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="card-text fs-5" style="white-space: pre-wrap;">"{{ message.content }}"</p>
+                    <footer class="blockquote-footer">
+
+                        {% if current_user.is_admin %}
+                            Signé : <strong class="text-dark">{{ message.author.username }}</strong>
+
+                            {% if message.first_name or message.last_name %}
+                                <span class="text-muted">(Pour : {{ message.first_name }} {{ message.last_name }})</span>
+                            {% endif %}
+
+                        {% else %}
+                            Signé : Vous
+                        {% endif %}
+
+                        <small class="text-muted d-block mt-1">
+                            Le {{ message.created_at.strftime('%d-%m-%Y à %H:%M') }}
+                        </small>
+                    </footer>
+
+                    {% if current_user.is_admin %}
+                        <form action="{{ url_for('delete_message', message_id=message.id) }}" method="POST" class="mt-3">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Supprimer ce message
+                            </button>
+                        </form>
+                    {% endif %}
+                    </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                Aucun message à afficher pour le moment.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

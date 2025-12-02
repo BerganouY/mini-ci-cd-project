@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Layer 5 - Monitoring (CloudWatch Alarms & SNS)
+
+Parameters:
+  AlertEmail:
+    Type: String
+    Description: Email address to receive alerts
+    Default: "your-email@example.com" # CHANGE THIS
+
+Resources:
+  # 1. The Notification Topic (SNS)
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: MiniProject-Alerts
+      Subscription:
+        - Endpoint: !Ref AlertEmail
+          Protocol: email
+
+  # 2. CPU Alarm for Web App
+  WebAppCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: WebApp-High-CPU
+      AlarmDescription: "Trigger if WebApp CPU > 80% for 5 minutes"
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 80.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      Dimensions:
+        - Name: InstanceId
+          Value: !ImportValue MiniProj-WebAppId
+
+  # 3. CPU Alarm for Database
+  DBCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: DB-High-CPU
+      AlarmDescription: "Trigger if Database CPU > 80% for 5 minutes"
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 80.0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      Dimensions:
+        - Name: InstanceId
+          Value: !ImportValue MiniProj-DBId

@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Layer 3 - IAM Roles (Permissions for EC2)
+
+Resources:
+  # 1. The Role (The Policy Definition)
+  EC2MonitorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: MiniProjectEC2Role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        # Allows writing logs and metrics to CloudWatch
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        # Allows AWS Systems Manager (SSM) - useful for debugging if SSH fails
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  # 2. The Instance Profile ( The "Container" to attach the Role to EC2)
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref EC2MonitorRole
+
+Outputs:
+  InstanceProfileName:
+    Description: The name of the IAM profile to attach to EC2
+    Value: !Ref EC2InstanceProfile
+    Export:
+      Name: MiniProj-InstanceProfile

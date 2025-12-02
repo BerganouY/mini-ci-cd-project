@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Layer 4 - EC2 Instances (Classic Setup with IAM & Monitoring Hooks)
+
+Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 KeyPair to enable SSH access.
+  FirstRun:
+    Type: String
+    AllowedValues: [ "true", "false" ]
+    Default: "false"
+    Description: "Set to 'true' on the first run to execute the UserData script."
+
+Conditions:
+  IsFirstRun: !Equals [ !Ref FirstRun, "true" ]
+
+Resources:
+  # ==========================================
+  # 1. WEB APP INSTANCE (Public Subnet)
+  # ==========================================
+  WebAppInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: "{{resolve:ssm:/mini-ci-cd/latest-ami-id}}"
+      KeyName: !Ref KeyName
+
+      # Networking
+      SubnetId: !ImportValue MiniProj-PublicSubnetId
+      SecurityGroupIds:
+        - !ImportValue MiniProj-WebSGId
+
+      # Security & Permissions (Links to Layer 3)
+      IamInstanceProfile: !ImportValue MiniProj-InstanceProfile
+
+      # Tags
+      Tags:
+        - Key: Name
+          Value: "webapp-server"
+
+      # Startup Script (Classic Deployment Setup)
+      UserData: !If
+        - IsFirstRun
+        - Fn::Base64: !Sub |
+            #!/bin/bash
+            # 1. Update & Install Dependencies
+            apt-get update
+            apt-get install -y python3-pip python3-venv nginx git mysql-client
+            
+            # 2. Prepare Application Directory
+            mkdir -p /home/ubuntu/mini-ci-cd-project
+            
+            # 3. Set Permissions so the 'ubuntu' user can deploy code later
+            chown -R ubuntu:ubuntu /home/ubuntu/mini-ci-cd-project
+        - !Ref AWS::NoValue
+
+  # ==========================================
+  # 2. DATABASE INSTANCE (Private Subnet)
+  # ==========================================
+  DBInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: "{{resolve:ssm:/mini-ci-cd/latest-ami-id}}"
+      KeyName: !Ref KeyName
+
+      # Networking
+      SubnetId: !ImportValue MiniProj-PrivateSubnetId
+      SecurityGroupIds:
+        - !ImportValue MiniProj-DBSGId
+
+      # Security & Permissions
+      IamInstanceProfile: !ImportValue MiniProj-InstanceProfile
+
+      # Tags
+      Tags:
+        - Key: Name
+          Value: "db-server"
+
+      # Startup Script (Database Setup)
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # 1. Install MariaDB (Works because of NAT Gateway in Layer 1)
+          apt-get update
+          apt-get install -y mariadb-server
+          
+          # 2. Configure MariaDB to listen on ALL IPs (0.0.0.0)
+          # By default, it only listens on localhost, which blocks the WebApp.
+          sed -i 's/bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
+          
+          # 3. Restart to apply config
+          systemctl restart mariadb
+          
+          # 4. Create Database & User (Classic SQL commands)
+          # The database and user should be created manually or by a secure automated process.
+          # The credentials should be passed to the application as environment variables.
+
+Outputs:
+  # Public IP for you to visit the website
+  WebAppIP:
+    Description: Public IP of the Web App
+    Value: !GetAtt WebAppInstance.PublicIp
+
+  # Private IP for the WebApp to talk to the DB
+  DBPrivateIP:
+    Description: Private IP of the Database
+    Value: !GetAtt DBInstance.PrivateIp
+
+  # Instance IDs required by Layer 5 (Monitoring)
+  WebAppId:
+    Description: Instance ID of the Web App for CloudWatch
+    Value: !Ref WebAppInstance
+    Export:
+      Name: MiniProj-WebAppId
+
+  DBId:
+    Description: Instance ID of the Database for CloudWatch
+    Value: !Ref DBInstance
+    Export:
+      Name: MiniProj-DBId

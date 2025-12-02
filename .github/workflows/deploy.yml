@@ -1,0 +1,107 @@
+name: Deploy Classic App
+
+on:
+  workflow_dispatch:
+    inputs:
+      first_run:
+        description: 'Is this the first run to create the base AMI?'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # --- INFRASTRUCTURE DEPLOYMENT ---
+      - name: Deploy Prerequisites
+        run: aws cloudformation deploy --stack-name mini-prerequisites --template-file cloudformation/0-prerequisites.yml
+
+      - name: Deploy Network
+        run: aws cloudformation deploy --stack-name mini-net --template-file cloudformation/1-network.yml
+
+      - name: Deploy Security
+        run: aws cloudformation deploy --stack-name mini-sg --template-file cloudformation/2-security.yml
+
+      - name: Deploy Compute
+        run: >
+          aws cloudformation deploy --stack-name mini-compute
+          --template-file cloudformation/4-compute.yml
+          --parameter-overrides KeyName=mini-project-key FirstRun=${{ github.event.inputs.first_run }}
+
+      # --- GET IPS FOR DEPLOYMENT ---
+      - name: Get Infrastructure IPs
+        id: get-ip
+        run: |
+          WEB_IP=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].Outputs[?OutputKey=='WebAppIP'].OutputValue" --output text)
+          DB_IP=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].Outputs[?OutputKey=='DBPrivateIP'].OutputValue" --output text)
+          echo "WEB_IP=$WEB_IP" >> $GITHUB_ENV
+          echo "DB_IP=$DB_IP" >> $GITHUB_ENV
+
+      # --- APP DEPLOYMENT (Classic SSH) ---
+      - name: Deploy Code via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ env.WEB_IP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # 1. Clone/Update Code
+            cd /home/ubuntu/mini-ci-cd-project
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/${{ github.repository }}.git .
+            else
+              git pull origin main
+            fi
+
+            # 2. Setup Python Environment
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+            pip install -r backend/requirements.txt
+
+            # 3. Configure Environment Variables
+            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > backend/.env
+            echo "DATABASE_HOST=${{ env.DB_IP }}" >> backend/.env
+            echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> backend/.env
+            echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> backend/.env
+            echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> backend/.env
+
+            # 4. Configure Services (Systemd & Nginx)
+            sudo cp backend/deploy/app.service /etc/systemd/system/
+            sudo cp backend/deploy/nginx_app.conf /etc/nginx/sites-available/app
+            
+            # Enable Nginx Site
+            sudo ln -s /etc/nginx/sites-available/app /etc/nginx/sites-enabled/ || true
+            sudo rm /etc/nginx/sites-enabled/default || true
+
+            # 5. Restart Services
+            sudo systemctl daemon-reload
+            sudo systemctl enable app
+            sudo systemctl restart app
+            sudo systemctl restart nginx
+
+      # --- BAKE AMI ---
+      - name: Bake AMI
+        if: github.event.inputs.first_run == 'true'
+        run: |
+          echo "Baking new AMI..."
+          WEB_APP_ID=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].Outputs[?OutputKey=='WebAppId'].OutputValue" --output text)
+          IMAGE_NAME="mini-ci-cd-golden-ami-$(date +%Y-%m-%d-%H-%M-%S)"
+          IMAGE_ID=$(aws ec2 create-image --instance-id $WEB_APP_ID --name "$IMAGE_NAME" --query "ImageId" --output text)
+          echo "Waiting for AMI $IMAGE_ID to be available..."
+          aws ec2 wait image-available --image-ids $IMAGE_ID
+          echo "AMI $IMAGE_ID is available."
+          aws ssm put-parameter --name "/mini-ci-cd/latest-ami-id" --value $IMAGE_ID --type "String" --overwrite --region us-east-1
+          echo "SSM parameter /mini-ci-cd/latest-ami-id updated with new AMI ID: $IMAGE_ID"

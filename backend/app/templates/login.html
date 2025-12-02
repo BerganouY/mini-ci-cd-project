@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h2 class="mb-4 text-center">Se connecter</h2>
+            <form method="POST" action="" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), size=32) }}
+                    {% for error in form.email.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), size=32) }}
+                    {% for error in form.password.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3 form-check">
+                    {{ form.remember(class="form-check-input") }}
+                    {{ form.remember.label(class="form-check-label") }}
+                </div>
+
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-custom-pink btn-lg") }}
+                </div>
+            </form>
+            <div class="border-top pt-3 mt-3 text-center">
+                <small class="text-muted">
+                    Pas encore de compte ? <a href="{{ url_for('signup') }}">Créer un compte</a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

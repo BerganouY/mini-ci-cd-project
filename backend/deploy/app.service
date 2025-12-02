@@ -1,0 +1,14 @@
+[Unit]
+Description=Gunicorn instance to serve Felicit App
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/mini-ci-cd-project/backend
+Environment="PATH=/home/ubuntu/mini-ci-cd-project/venv/bin"
+EnvironmentFile=/home/ubuntu/mini-ci-cd-project/backend/.env
+ExecStart=/home/ubuntu/mini-ci-cd-project/venv/bin/gunicorn --workers 3 --bind unix:app.sock -m 007 run:app
+
+[Install]
+WantedBy=multi-user.target
