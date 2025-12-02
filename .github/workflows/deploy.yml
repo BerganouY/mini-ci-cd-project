@@ -69,6 +69,12 @@ jobs:
           aws cloudformation deploy --stack-name mini-iam --template-file cloudformation/3-iam-roles.yml --capabilities CAPABILITY_NAMED_IAM
 
 
+      - name: Get Latest AMI ID
+        id: get-ami
+        run: |
+          AMI_ID=$(aws ssm get-parameter --name "/mini-ci-cd/latest-ami-id" --query "Parameter.Value" --output text)
+          echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
+
       - name: Deploy Compute
         run: |
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].StackStatus" --output text 2>/dev/null) || STACK_STATUS="DOES_NOT_EXIST"
@@ -80,7 +86,7 @@ jobs:
           fi
           aws cloudformation deploy --stack-name mini-compute \
           --template-file cloudformation/4-compute.yml \
-          --parameter-overrides KeyName=mini-project-key FirstRun=${{ github.event.inputs.first_run }} DBRootPassword=${{ secrets.DB_ROOT_PASSWORD }}
+          --parameter-overrides KeyName=mini-project-key FirstRun=${{ github.event.inputs.first_run }} DBRootPassword=${{ secrets.DB_ROOT_PASSWORD }} WebAppAmiId=${{ env.AMI_ID }}
 
       # --- GET IPS FOR DEPLOYMENT ---
       - name: Get Infrastructure IPs

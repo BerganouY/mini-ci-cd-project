@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Layer 4 - EC2 Instances (Classic Setup with IAM & Monitoring Hooks)
 
 Parameters:
+  WebAppAmiId:
+    Type: String
+    Description: "The AMI ID for the web application and database instances."
   DBRootPassword:
     Type: String
     Description: "The root password for the database. This is passed from a GitHub secret."
@@ -26,7 +29,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t3.micro
-      ImageId: "{{resolve:ssm:/mini-ci-cd/latest-ami-id}}"
+      ImageId: !Ref WebAppAmiId
       KeyName: !Ref KeyName
 
       # Networking
@@ -65,7 +68,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t3.micro
-      ImageId: "{{resolve:ssm:/mini-ci-cd/latest-ami-id}}"
+      ImageId: !Ref WebAppAmiId
       KeyName: !Ref KeyName
 
       # Networking
