@@ -26,7 +26,7 @@ jobs:
       # --- INFRASTRUCTURE DEPLOYMENT ---
       - name: Deploy Prerequisites
         run: |
-          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-prerequisites --query "Stacks[0].StackStatus" --output text 2>/dev/null)
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-prerequisites --query "Stacks[0].StackStatus" --output text 2>/dev/null) || STACK_STATUS="DOES_NOT_EXIST"
           if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
             echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
             aws cloudformation delete-stack --stack-name mini-prerequisites
@@ -37,7 +37,7 @@ jobs:
 
       - name: Deploy Network
         run: |
-          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-net --query "Stacks[0].StackStatus" --output text 2>/dev/null)
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-net --query "Stacks[0].StackStatus" --output text 2>/dev/null) || STACK_STATUS="DOES_NOT_EXIST"
           if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
             echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
             aws cloudformation delete-stack --stack-name mini-net
@@ -48,7 +48,7 @@ jobs:
 
       - name: Deploy Security
         run: |
-          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-sg --query "Stacks[0].StackStatus" --output text 2>/dev/null)
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-sg --query "Stacks[0].StackStatus" --output text 2>/dev/null) || STACK_STATUS="DOES_NOT_EXIST"
           if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
             echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
             aws cloudformation delete-stack --stack-name mini-sg
@@ -59,7 +59,7 @@ jobs:
 
       - name: Deploy Compute
         run: |
-          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].StackStatus" --output text 2>/dev/null)
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].StackStatus" --output text 2>/dev/null) || STACK_STATUS="DOES_NOT_EXIST"
           if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
             echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
             aws cloudformation delete-stack --stack-name mini-compute
