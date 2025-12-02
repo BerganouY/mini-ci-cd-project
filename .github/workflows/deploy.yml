@@ -123,9 +123,17 @@ jobs:
 
             # 4. Initialize Database
             source backend/.env
+            echo "DATABASE_HOST: $DATABASE_HOST"
+            echo "DATABASE_USERNAME: $DATABASE_USERNAME"
+            echo "--- Before sed ---"
+            cat database/init.sql
             sed -i "s/your_username_here/$DATABASE_USERNAME/" database/init.sql
             sed -i "s/your_password_here/$DATABASE_PASSWORD/" database/init.sql
-            mysql -h $DATABASE_HOST -u $DATABASE_USERNAME -p$DATABASE_PASSWORD < database/init.sql
+            echo "--- After sed ---"
+            cat database/init.sql
+            echo "--- Running mysql command ---"
+            mysql -h $DATABASE_HOST -u $DATABASE_USERNAME -p"$DATABASE_PASSWORD" < database/init.sql
+            echo "--- Mysql command finished ---"
 
             # 5. Configure Services (Systemd & Nginx)
             sudo cp backend/deploy/app.service /etc/systemd/system/
