@@ -153,7 +153,7 @@ jobs:
             
             # SSH into DB Server and run Grants (Runs as ROOT on DB via sudo)
             ssh -o StrictHostKeyChecking=no -i /home/ubuntu/temp_key.pem ubuntu@$DB_IP \
-              "sudo mysql -e \"CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS'; GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%'; FLUSH PRIVILEGES;\""
+              "sudo mysql -e \"CREATE DATABASE IF NOT EXISTS $DB_NAME; CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS'; GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%'; FLUSH PRIVILEGES;\""
             
             # Cleanup key
             rm /home/ubuntu/temp_key.pem
