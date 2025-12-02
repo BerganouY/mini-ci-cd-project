@@ -69,11 +69,10 @@ jobs:
           fi
           aws cloudformation deploy --stack-name mini-iam --template-file cloudformation/3-iam-roles.yml --capabilities CAPABILITY_NAMED_IAM
 
-
       - name: Get Latest AMI ID
         id: get-ami
         run: |
-          AMI_ID=$(aws ssm get-parameter --name "/mini-ci-cd/latest-ami-id" --query "Parameter.Value" --output text)
+          AMI_ID=$(aws ssm get-parameter --name "/mini-ci-cd/latest-ami-id" --query "Parameter.Value" --output text 2>/dev/null) || AMI_ID="ami-045a8ab02aadf4f88" # Fallback to default if not set
           echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
           echo "The AMI ID is: $AMI_ID"
 
@@ -99,60 +98,84 @@ jobs:
           echo "WEB_IP=$WEB_IP" >> $GITHUB_ENV
           echo "DB_IP=$DB_IP" >> $GITHUB_ENV
 
-      # --- APP DEPLOYMENT (Classic SSH) ---
+      # --- APP DEPLOYMENT (Classic SSH with Fixes) ---
       - name: Deploy Code via SSH
         uses: appleboy/ssh-action@v1.0.0
+        env:
+          # Map secrets to env vars so we can pass them to the script
+          SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          DB_USER: ${{ secrets.DATABASE_USERNAME }}
+          DB_PASS: ${{ secrets.DATABASE_PASSWORD }}
+          DB_NAME: ${{ secrets.DATABASE_NAME }}
+          DB_IP: ${{ env.DB_IP }}
         with:
           host: ${{ env.WEB_IP }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          # Pass env vars to the remote server
+          envs: SSH_KEY,SECRET_KEY,DB_USER,DB_PASS,DB_NAME,DB_IP
           script: |
-            # Install system dependencies
+            # --- 1. SETUP ENV & DEPENDENCIES ---
             sudo apt-get update
-            sudo apt-get install -y python3-venv mysql-client nginx -y
-
-            # Ensure the project directory exists
+            sudo apt-get install -y python3-venv mysql-client nginx
+            
+            # Create App Directory & Set Initial Permissions
             sudo mkdir -p /home/ubuntu/mini-ci-cd-project
+            sudo chown ubuntu:ubuntu /home/ubuntu/mini-ci-cd-project
             cd /home/ubuntu/mini-ci-cd-project
 
-            # 1. Clone/Update Code
+            # --- 2. CLONE & INSTALL APP ---
             if [ ! -d ".git" ]; then
               git clone https://github.com/${{ github.repository }}.git .
             else
-              # Fetch all branches and prune old ones, then reset to the latest version from the main branch
               git fetch --all --prune
               git reset --hard origin/main
             fi
 
-            # 2. Setup Python Environment
-            if [ ! -d "venv" ]; then
-              python3 -m venv venv
-            fi
+            # Setup Python Venv
+            if [ ! -d "venv" ]; then python3 -m venv venv; fi
             source venv/bin/activate
             pip install -r backend/requirements.txt
 
-            # 3. Configure Environment Variables
-            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > backend/.env
-            echo "DATABASE_HOST=${{ env.DB_IP }}" >> backend/.env
-            echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> backend/.env
-            echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> backend/.env
-            echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> backend/.env
+            # Write .env file
+            echo "SECRET_KEY=$SECRET_KEY" > backend/.env
+            echo "DATABASE_HOST=$DB_IP" >> backend/.env
+            echo "DATABASE_USERNAME=$DB_USER" >> backend/.env
+            echo "DATABASE_PASSWORD=$DB_PASS" >> backend/.env
+            echo "DATABASE_NAME=$DB_NAME" >> backend/.env
 
+            # --- 3. AUTOMATED DB PERMISSION FIX (The Jump Strategy) ---
+            echo "Fixing DB Permissions on host $DB_IP..."
+            # Create temporary key
+            echo "$SSH_KEY" > /home/ubuntu/temp_key.pem
+            chmod 600 /home/ubuntu/temp_key.pem
+            
+            # SSH into DB Server and run Grants (Runs as ROOT on DB via sudo)
+            ssh -o StrictHostKeyChecking=no -i /home/ubuntu/temp_key.pem ubuntu@$DB_IP \
+              "sudo mysql -e \"CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS'; GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%'; FLUSH PRIVILEGES;\""
+            
+            # Cleanup key
+            rm /home/ubuntu/temp_key.pem
+            echo "DB Permissions Fixed."
 
-
-            # 5. Configure Services (Systemd & Nginx)
+            # --- 4. CONFIGURE SERVICES ---
             sudo cp backend/deploy/app.service /etc/systemd/system/
             sudo cp backend/deploy/nginx_app.conf /etc/nginx/sites-available/app
-            
-            # Enable Nginx Site (corrected symbolic link creation)
             sudo ln -sf /etc/nginx/sites-available/app /etc/nginx/sites-enabled/app
             sudo rm -f /etc/nginx/sites-enabled/default
 
-            # 6. Restart Services
+            # --- 5. FIX NGINX PERMISSIONS (The 502 Fix) ---
+            # Give Nginx (www-data) access to the files
+            sudo chown -R ubuntu:www-data /home/ubuntu/mini-ci-cd-project
+            sudo chmod -R 775 /home/ubuntu/mini-ci-cd-project
+            # Allow Nginx to traverse the home directory
+            sudo chmod 755 /home/ubuntu
+
+            # --- 6. RESTART ---
             sudo systemctl daemon-reload
             sudo systemctl enable app
             sudo systemctl restart app
-            sudo systemctl status app --no-pager
             sudo systemctl restart nginx
 
       # --- BAKE AMI ---
