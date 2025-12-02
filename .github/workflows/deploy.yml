@@ -75,6 +75,7 @@ jobs:
         run: |
           AMI_ID=$(aws ssm get-parameter --name "/mini-ci-cd/latest-ami-id" --query "Parameter.Value" --output text)
           echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
+          echo "The AMI ID is: $AMI_ID"
 
       - name: Deploy Compute
         run: |
@@ -106,13 +107,20 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            # 1. Clone/Update Code
+            # Install system dependencies
+            sudo apt-get update
+            sudo apt-get install -y python3-venv mysql-client nginx -y
+
+            # Ensure the project directory exists
+            sudo mkdir -p /home/ubuntu/mini-ci-cd-project
             cd /home/ubuntu/mini-ci-cd-project
+
+            # 1. Clone/Update Code
             if [ ! -d ".git" ]; then
               git clone https://github.com/${{ github.repository }}.git .
             else
-              # Reset to the latest version from the repository, discarding local changes
-              git fetch origin
+              # Fetch all branches and prune old ones, then reset to the latest version from the main branch
+              git fetch --all --prune
               git reset --hard origin/main
             fi
 
@@ -133,11 +141,12 @@ jobs:
             # 4. Initialize Database
             source backend/.env
             # Create a temporary, modified init.sql file
-            sed "s/your_username_here/$DATABASE_USERNAME/" database/init.sql > /tmp/init.sql
+            cp database/init.sql /tmp/init.sql
+            sed -i "s/your_username_here/$DATABASE_USERNAME/" /tmp/init.sql
             sed -i "s/your_password_here/$DATABASE_PASSWORD/" /tmp/init.sql
-            # Add a delay to give the database time to be ready
+            # Add a delay to give the database time to be ready and services to start
             echo "Waiting for the database to be ready..."
-            sleep 10
+            sleep 30 # Increased sleep for more robustness
             mysql -h $DATABASE_HOST -u root -p'${{ secrets.DB_ROOT_PASSWORD }}' < /tmp/init.sql
             rm /tmp/init.sql
 
@@ -145,15 +154,15 @@ jobs:
             sudo cp backend/deploy/app.service /etc/systemd/system/
             sudo cp backend/deploy/nginx_app.conf /etc/nginx/sites-available/app
             
-            # Enable Nginx Site
-            sudo ln -s /etc/nginx/sites-available/app /etc/nginx/sites-enabled/ || true
-            sudo rm /etc/nginx/sites-enabled/default || true
+            # Enable Nginx Site (corrected symbolic link creation)
+            sudo ln -sf /etc/nginx/sites-available/app /etc/nginx/sites-enabled/app
+            sudo rm -f /etc/nginx/sites-enabled/default
 
             # 6. Restart Services
             sudo systemctl daemon-reload
             sudo systemctl enable app
             sudo systemctl restart app
-            sudo systemctl status app
+            sudo systemctl status app --no-pager
             sudo systemctl restart nginx
 
       # --- BAKE AMI ---
