@@ -7,5 +7,5 @@ Resources:
     Properties:
       Name: /mini-ci-cd/latest-ami-id
       Type: String
-      Value: ami-placeholder-for-us-east-1 # Base Ubuntu 24.04 LTS AMI for us-east-1
+      Value: ami-0ecb62995f68bb549 #aws ssm get-parameters --names /aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id --region us-east-1 --query "Parameters[0].Value" --output text
       Description: "The latest AMI ID to be used for the web application."
