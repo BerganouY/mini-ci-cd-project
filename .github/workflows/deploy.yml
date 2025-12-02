@@ -57,6 +57,18 @@ jobs:
           fi
           aws cloudformation deploy --stack-name mini-sg --template-file cloudformation/2-security-groups.yml
 
+      - name: Deploy IAM Roles
+        run: |
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-iam --query "Stacks[0].StackStatus" --output text 2>/dev/null) || STACK_STATUS="DOES_NOT_EXIST"
+          if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
+            echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
+            aws cloudformation delete-stack --stack-name mini-iam
+            aws cloudformation wait stack-delete-complete --stack-name mini-iam
+            echo "Stack deleted."
+          fi
+          aws cloudformation deploy --stack-name mini-iam --template-file cloudformation/3-iam-roles.yml --capabilities CAPABILITY_NAMED_IAM
+
+
       - name: Deploy Compute
         run: |
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].StackStatus" --output text 2>/dev/null) || STACK_STATUS="DOES_NOT_EXIST"
