@@ -26,6 +26,7 @@ jobs:
       # --- INFRASTRUCTURE DEPLOYMENT ---
       - name: Deploy Prerequisites
         run: |
+          echo "Deploying Prerequisites at $(date)"
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name mini-prerequisites --query "Stacks[0].StackStatus" --output text 2>/dev/null) || STACK_STATUS="DOES_NOT_EXIST"
           if [ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
             echo "Stack is in ROLLBACK_COMPLETE state. Deleting stack..."
@@ -33,7 +34,7 @@ jobs:
             aws cloudformation wait stack-delete-complete --stack-name mini-prerequisites
             echo "Stack deleted."
           fi
-          aws cloudformation deploy --stack-name mini-prerequisites --template-file cloudformation/0-prerequisites.yml
+          aws cloudformation deploy --stack-name mini-prerequisites --template-file cloudformation/0-prerequisites.yml --no-fail-on-empty-changeset
 
       - name: Deploy Network
         run: |
