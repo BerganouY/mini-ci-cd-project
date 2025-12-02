@@ -8,6 +8,7 @@ from app import app as flask_app
 def client():
     # Configure the app for testing
     flask_app.config['TESTING'] = True
+    flask_app.config['SECRET_KEY'] = 'a-secret-key-for-testing'
 
     # Create a test client using the existing app
     with flask_app.test_client() as client:
