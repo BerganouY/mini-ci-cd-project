@@ -28,7 +28,7 @@ jobs:
         run: aws cloudformation deploy --stack-name mini-prerequisites --template-file cloudformation/0-prerequisites.yml
 
       - name: Deploy Network
-        run: aws cloudformation deploy --stack-name mini-net --template-file cloudformation/1-network.yml
+        run: aws cloudformation deploy --stack-name mini-net --template-file cloudformation/1-vpc-network.yml
 
       - name: Deploy Security
         run: aws cloudformation deploy --stack-name mini-sg --template-file cloudformation/2-security.yml
