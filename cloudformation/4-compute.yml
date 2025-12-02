@@ -107,9 +107,15 @@ Resources:
           done
           echo "MariaDB is ready."
 
-          # 5. Set a password for the root user.
-          mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DBRootPassword}';"
-          mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DBRootPassword}' WITH GRANT OPTION;"
+          # 5. Ensure MariaDB service is running and enabled
+          systemctl enable mariadb
+          systemctl start mariadb
+
+          # 6. Clean up existing root@localhost and grant all privileges to root@'%'
+          # This ensures that the root user can connect from any host with the provided password
+          mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host='localhost';"
+          mysql -e "CREATE USER 'root'@'%' IDENTIFIED BY '${DBRootPassword}';"
+          mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;"
           mysql -e "FLUSH PRIVILEGES;"
 
 
