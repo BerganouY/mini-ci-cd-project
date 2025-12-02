@@ -80,7 +80,7 @@ jobs:
           fi
           aws cloudformation deploy --stack-name mini-compute \
           --template-file cloudformation/4-compute.yml \
-          --parameter-overrides KeyName=mini-project-key FirstRun=${{ github.event.inputs.first_run }}
+          --parameter-overrides KeyName=mini-project-key FirstRun=${{ github.event.inputs.first_run }} DBRootPassword=${{ secrets.DB_ROOT_PASSWORD }}
 
       # --- GET IPS FOR DEPLOYMENT ---
       - name: Get Infrastructure IPs
@@ -123,17 +123,9 @@ jobs:
 
             # 4. Initialize Database
             source backend/.env
-            echo "DATABASE_HOST: $DATABASE_HOST"
-            echo "DATABASE_USERNAME: $DATABASE_USERNAME"
-            echo "--- Before sed ---"
-            cat database/init.sql
             sed -i "s/your_username_here/$DATABASE_USERNAME/" database/init.sql
             sed -i "s/your_password_here/$DATABASE_PASSWORD/" database/init.sql
-            echo "--- After sed ---"
-            cat database/init.sql
-            echo "--- Running mysql command ---"
-            mysql -h $DATABASE_HOST -u $DATABASE_USERNAME -p"$DATABASE_PASSWORD" < database/init.sql
-            echo "--- Mysql command finished ---"
+            mysql -h $DATABASE_HOST -u root -p'${{ secrets.DB_ROOT_PASSWORD }}' < database/init.sql
 
             # 5. Configure Services (Systemd & Nginx)
             sudo cp backend/deploy/app.service /etc/systemd/system/

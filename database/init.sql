@@ -5,13 +5,16 @@
 -- 1. Create the Database
 CREATE DATABASE IF NOT EXISTS carnet_db;
 
--- 2. Create the Application User
--- We use '%' to allow connections from any IP (required because WebApp and DB are on different servers)
-CREATE USER IF NOT EXISTS 'your_username_here'@'%' IDENTIFIED BY 'your_password_here';
+-- 2. Drop the existing user (if it exists) to ensure a clean slate
+DROP USER IF EXISTS 'your_username_here'@'%';
+DROP USER IF EXISTS 'your_username_here'@'localhost';
 
--- 3. Grant Permissions
+-- 3. Create the Application User
+CREATE USER 'your_username_here'@'%' IDENTIFIED BY 'your_password_here';
+
+-- 4. Grant Permissions
 -- Grant only the necessary privileges to the application user
 GRANT SELECT, INSERT, UPDATE, DELETE ON carnet_db.* TO 'your_username_here'@'%';
 
--- 4. Apply Changes
+-- 5. Apply Changes
 FLUSH PRIVILEGES;

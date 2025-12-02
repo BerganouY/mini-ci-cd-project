@@ -2,6 +2,10 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Layer 4 - EC2 Instances (Classic Setup with IAM & Monitoring Hooks)
 
 Parameters:
+  DBRootPassword:
+    Type: String
+    Description: "The root password for the database. This is passed from a GitHub secret."
+    NoEcho: true
   KeyName:
     Type: AWS::EC2::KeyPair::KeyName
     Description: Name of an existing EC2 KeyPair to enable SSH access.
@@ -91,10 +95,12 @@ Resources:
           
           # 3. Restart to apply config
           systemctl restart mariadb
-          
-          # 4. Create Database & User (Classic SQL commands)
-          # The database and user should be created manually or by a secure automated process.
-          # The credentials should be passed to the application as environment variables.
+
+          # 4. Set a password for the root user.
+          mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DBRootPassword}';"
+          mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DBRootPassword}' WITH GRANT OPTION;"
+          mysql -e "FLUSH PRIVILEGES;"
+
 
 Outputs:
   # Public IP for you to visit the website
