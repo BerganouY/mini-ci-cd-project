@@ -1,0 +1,124 @@
+{
+    "StackEvents": [
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "bbcd7cf0-cf8d-11f0-ac01-0affe2f2e12f",
+            "StackName": "mini-compute",
+            "OperationId": "5daac7f2-5f9f-4808-b683-d9490ba4312b",
+            "LogicalResourceId": "mini-compute",
+            "PhysicalResourceId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "ResourceType": "AWS::CloudFormation::Stack",
+            "Timestamp": "2025-12-02T14:46:49.637000+00:00",
+            "ResourceStatus": "ROLLBACK_COMPLETE"
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "WebAppInstance-DELETE_COMPLETE-2025-12-02T14:46:49.203Z",
+            "StackName": "mini-compute",
+            "OperationId": "5daac7f2-5f9f-4808-b683-d9490ba4312b",
+            "LogicalResourceId": "WebAppInstance",
+            "PhysicalResourceId": "",
+            "ResourceType": "AWS::EC2::Instance",
+            "Timestamp": "2025-12-02T14:46:49.203000+00:00",
+            "ResourceStatus": "DELETE_COMPLETE",
+            "ResourceProperties": "{\"KeyName\":\"mini-project-key\",\"UserData\":\"IyEvYmluL2Jhc2gKIyAxLiBVcGRhdGUgJiBJbnN0YWxsIERlcGVuZGVuY2llcwphcHQtZ2V0IHVwZGF0ZQphcHQtZ2V0IGluc3RhbGwgLXkgcHl0aG9uMy1waXAgcHl0aG9uMy12ZW52IG5naW54IGdpdCBteXNxbC1jbGllbnQKCiMgMi4gUHJlcGFyZSBBcHBsaWNhdGlvbiBEaXJlY3RvcnkKbWtkaXIgLXAgL2hvbWUvdWJ1bnR1L21pbmktY2ktY2QtcHJvamVjdAoKIyAzLiBTZXQgUGVybWlzc2lvbnMgc28gdGhlICd1YnVudHUnIHVzZXIgY2FuIGRlcGxveSBjb2RlIGxhdGVyCmNob3duIC1SIHVidW50dTp1YnVudHUgL2hvbWUvdWJ1bnR1L21pbmktY2ktY2QtcHJvamVjdAo=\",\"ImageId\":\"ami-0ecb62995f68bb549\",\"IamInstanceProfile\":\"mini-iam-EC2InstanceProfile-kLdhA7hU1oJ1\",\"SubnetId\":\"subnet-0f575aef769f918da\",\"InstanceType\":\"t2.micro\",\"SecurityGroupIds\":[\"sg-041cdada07964550f\"],\"Tags\":[{\"Value\":\"webapp-server\",\"Key\":\"Name\"}]}"
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "DBInstance-DELETE_COMPLETE-2025-12-02T14:46:41.191Z",
+            "StackName": "mini-compute",
+            "OperationId": "5daac7f2-5f9f-4808-b683-d9490ba4312b",
+            "LogicalResourceId": "DBInstance",
+            "PhysicalResourceId": "",
+            "ResourceType": "AWS::EC2::Instance",
+            "Timestamp": "2025-12-02T14:46:41.191000+00:00",
+            "ResourceStatus": "DELETE_COMPLETE",
+            "ResourceProperties": "{\"KeyName\":\"mini-project-key\",\"UserData\":\"IyEvYmluL2Jhc2gKIyAxLiBJbnN0YWxsIE1hcmlhREIgKFdvcmtzIGJlY2F1c2Ugb2YgTkFUIEdhdGV3YXkgaW4gTGF5ZXIgMSkKYXB0LWdldCB1cGRhdGUKYXB0LWdldCBpbnN0YWxsIC15IG1hcmlhZGItc2VydmVyCgojIDIuIENvbmZpZ3VyZSBNYXJpYURCIHRvIGxpc3RlbiBvbiBBTEwgSVBzICgwLjAuMC4wKQojIEJ5IGRlZmF1bHQsIGl0IG9ubHkgbGlzdGVucyBvbiBsb2NhbGhvc3QsIHdoaWNoIGJsb2NrcyB0aGUgV2ViQXBwLgpzZWQgLWkgJ3MvYmluZC1hZGRyZXNzLiovYmluZC1hZGRyZXNzID0gMC4wLjAuMC8nIC9ldGMvbXlzcWwvbWFyaWFkYi5jb25mLmQvNTAtc2VydmVyLmNuZgoKIyAzLiBSZXN0YXJ0IHRvIGFwcGx5IGNvbmZpZwpzeXN0ZW1jdGwgcmVzdGFydCBtYXJpYWRiCgojIDQuIENyZWF0ZSBEYXRhYmFzZSAmIFVzZXIgKENsYXNzaWMgU1FMIGNvbW1hbmRzKQojIFRoZSBkYXRhYmFzZSBhbmQgdXNlciBzaG91bGQgYmUgY3JlYXRlZCBtYW51YWxseSBvciBieSBhIHNlY3VyZSBhdXRvbWF0ZWQgcHJvY2Vzcy4KIyBUaGUgY3JlZGVudGlhbHMgc2hvdWxkIGJlIHBhc3NlZCB0byB0aGUgYXBwbGljYXRpb24gYXMgZW52aXJvbm1lbnQgdmFyaWFibGVzLgo=\",\"ImageId\":\"ami-0ecb62995f68bb549\",\"IamInstanceProfile\":\"mini-iam-EC2InstanceProfile-kLdhA7hU1oJ1\",\"SubnetId\":\"subnet-022e0d82a0e90ed08\",\"InstanceType\":\"t2.micro\",\"SecurityGroupIds\":[\"sg-09cd2c06b60713169\"],\"Tags\":[{\"Value\":\"db-server\",\"Key\":\"Name\"}]}"
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "697ea050-cf8d-11f0-988d-0e3fcbc42091",
+            "StackName": "mini-compute",
+            "OperationId": "5daac7f2-5f9f-4808-b683-d9490ba4312b",
+            "LogicalResourceId": "mini-compute",
+            "PhysicalResourceId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "ResourceType": "AWS::CloudFormation::Stack",
+            "Timestamp": "2025-12-02T14:44:31.528000+00:00",
+            "ResourceStatus": "ROLLBACK_IN_PROGRESS",
+            "ResourceStatusReason": "The following resource(s) failed to create: [WebAppInstance, DBInstance]. Rollback requested by user."
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "DBInstance-CREATE_FAILED-2025-12-02T14:44:30.969Z",
+            "StackName": "mini-compute",
+            "OperationId": "f28fafb5-2c9a-4af7-89b2-96cf0d2e7547",
+            "LogicalResourceId": "DBInstance",
+            "PhysicalResourceId": "",
+            "ResourceType": "AWS::EC2::Instance",
+            "Timestamp": "2025-12-02T14:44:30.969000+00:00",
+            "ResourceStatus": "CREATE_FAILED",
+            "ResourceStatusReason": "Resource handler returned message: \"The specified instance type is not eligible for Free Tier. For a list of Free Tier instance types, run 'describe-instance-types' with the filter 'free-tier-eligible=true'. (Service: Ec2, Status Code: 400, Request ID: d09237a4-5ac2-4035-b3e5-6343eb69141c) (SDK Attempt Count: 1)\" (RequestToken: f1b7e82a-196b-dfeb-29b2-2f52175817ca, HandlerErrorCode: InvalidRequest)",
+            "ResourceProperties": "{\"KeyName\":\"mini-project-key\",\"UserData\":\"IyEvYmluL2Jhc2gKIyAxLiBJbnN0YWxsIE1hcmlhREIgKFdvcmtzIGJlY2F1c2Ugb2YgTkFUIEdhdGV3YXkgaW4gTGF5ZXIgMSkKYXB0LWdldCB1cGRhdGUKYXB0LWdldCBpbnN0YWxsIC15IG1hcmlhZGItc2VydmVyCgojIDIuIENvbmZpZ3VyZSBNYXJpYURCIHRvIGxpc3RlbiBvbiBBTEwgSVBzICgwLjAuMC4wKQojIEJ5IGRlZmF1bHQsIGl0IG9ubHkgbGlzdGVucyBvbiBsb2NhbGhvc3QsIHdoaWNoIGJsb2NrcyB0aGUgV2ViQXBwLgpzZWQgLWkgJ3MvYmluZC1hZGRyZXNzLiovYmluZC1hZGRyZXNzID0gMC4wLjAuMC8nIC9ldGMvbXlzcWwvbWFyaWFkYi5jb25mLmQvNTAtc2VydmVyLmNuZgoKIyAzLiBSZXN0YXJ0IHRvIGFwcGx5IGNvbmZpZwpzeXN0ZW1jdGwgcmVzdGFydCBtYXJpYWRiCgojIDQuIENyZWF0ZSBEYXRhYmFzZSAmIFVzZXIgKENsYXNzaWMgU1FMIGNvbW1hbmRzKQojIFRoZSBkYXRhYmFzZSBhbmQgdXNlciBzaG91bGQgYmUgY3JlYXRlZCBtYW51YWxseSBvciBieSBhIHNlY3VyZSBhdXRvbWF0ZWQgcHJvY2Vzcy4KIyBUaGUgY3JlZGVudGlhbHMgc2hvdWxkIGJlIHBhc3NlZCB0byB0aGUgYXBwbGljYXRpb24gYXMgZW52aXJvbm1lbnQgdmFyaWFibGVzLgo=\",\"ImageId\":\"ami-0ecb62995f68bb549\",\"IamInstanceProfile\":\"mini-iam-EC2InstanceProfile-kLdhA7hU1oJ1\",\"SubnetId\":\"subnet-022e0d82a0e90ed08\",\"InstanceType\":\"t2.micro\",\"SecurityGroupIds\":[\"sg-09cd2c06b60713169\"],\"Tags\":[{\"Value\":\"db-server\",\"Key\":\"Name\"}]}"
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "WebAppInstance-CREATE_FAILED-2025-12-02T14:44:30.952Z",
+            "StackName": "mini-compute",
+            "OperationId": "f28fafb5-2c9a-4af7-89b2-96cf0d2e7547",
+            "LogicalResourceId": "WebAppInstance",
+            "PhysicalResourceId": "",
+            "ResourceType": "AWS::EC2::Instance",
+            "Timestamp": "2025-12-02T14:44:30.952000+00:00",
+            "ResourceStatus": "CREATE_FAILED",
+            "ResourceStatusReason": "Resource handler returned message: \"The specified instance type is not eligible for Free Tier. For a list of Free Tier instance types, run 'describe-instance-types' with the filter 'free-tier-eligible=true'. (Service: Ec2, Status Code: 400, Request ID: 449c869d-df58-44f1-a3d2-c30e6ca00f46) (SDK Attempt Count: 1)\" (RequestToken: 35ce134d-27e6-6de4-975a-aa1964a35df0, HandlerErrorCode: InvalidRequest)",
+            "ResourceProperties": "{\"KeyName\":\"mini-project-key\",\"UserData\":\"IyEvYmluL2Jhc2gKIyAxLiBVcGRhdGUgJiBJbnN0YWxsIERlcGVuZGVuY2llcwphcHQtZ2V0IHVwZGF0ZQphcHQtZ2V0IGluc3RhbGwgLXkgcHl0aG9uMy1waXAgcHl0aG9uMy12ZW52IG5naW54IGdpdCBteXNxbC1jbGllbnQKCiMgMi4gUHJlcGFyZSBBcHBsaWNhdGlvbiBEaXJlY3RvcnkKbWtkaXIgLXAgL2hvbWUvdWJ1bnR1L21pbmktY2ktY2QtcHJvamVjdAoKIyAzLiBTZXQgUGVybWlzc2lvbnMgc28gdGhlICd1YnVudHUnIHVzZXIgY2FuIGRlcGxveSBjb2RlIGxhdGVyCmNob3duIC1SIHVidW50dTp1YnVudHUgL2hvbWUvdWJ1bnR1L21pbmktY2ktY2QtcHJvamVjdAo=\",\"ImageId\":\"ami-0ecb62995f68bb549\",\"IamInstanceProfile\":\"mini-iam-EC2InstanceProfile-kLdhA7hU1oJ1\",\"SubnetId\":\"subnet-0f575aef769f918da\",\"InstanceType\":\"t2.micro\",\"SecurityGroupIds\":[\"sg-041cdada07964550f\"],\"Tags\":[{\"Value\":\"webapp-server\",\"Key\":\"Name\"}]}"
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "WebAppInstance-CREATE_IN_PROGRESS-2025-12-02T14:44:29.541Z",
+            "StackName": "mini-compute",
+            "OperationId": "f28fafb5-2c9a-4af7-89b2-96cf0d2e7547",
+            "LogicalResourceId": "WebAppInstance",
+            "PhysicalResourceId": "",
+            "ResourceType": "AWS::EC2::Instance",
+            "Timestamp": "2025-12-02T14:44:29.541000+00:00",
+            "ResourceStatus": "CREATE_IN_PROGRESS",
+            "ResourceProperties": "{\"KeyName\":\"mini-project-key\",\"UserData\":\"IyEvYmluL2Jhc2gKIyAxLiBVcGRhdGUgJiBJbnN0YWxsIERlcGVuZGVuY2llcwphcHQtZ2V0IHVwZGF0ZQphcHQtZ2V0IGluc3RhbGwgLXkgcHl0aG9uMy1waXAgcHl0aG9uMy12ZW52IG5naW54IGdpdCBteXNxbC1jbGllbnQKCiMgMi4gUHJlcGFyZSBBcHBsaWNhdGlvbiBEaXJlY3RvcnkKbWtkaXIgLXAgL2hvbWUvdWJ1bnR1L21pbmktY2ktY2QtcHJvamVjdAoKIyAzLiBTZXQgUGVybWlzc2lvbnMgc28gdGhlICd1YnVudHUnIHVzZXIgY2FuIGRlcGxveSBjb2RlIGxhdGVyCmNob3duIC1SIHVidW50dTp1YnVudHUgL2hvbWUvdWJ1bnR1L21pbmktY2ktY2QtcHJvamVjdAo=\",\"ImageId\":\"ami-0ecb62995f68bb549\",\"IamInstanceProfile\":\"mini-iam-EC2InstanceProfile-kLdhA7hU1oJ1\",\"SubnetId\":\"subnet-0f575aef769f918da\",\"InstanceType\":\"t2.micro\",\"SecurityGroupIds\":[\"sg-041cdada07964550f\"],\"Tags\":[{\"Value\":\"webapp-server\",\"Key\":\"Name\"}]}"
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "DBInstance-CREATE_IN_PROGRESS-2025-12-02T14:44:29.535Z",
+            "StackName": "mini-compute",
+            "OperationId": "f28fafb5-2c9a-4af7-89b2-96cf0d2e7547",
+            "LogicalResourceId": "DBInstance",
+            "PhysicalResourceId": "",
+            "ResourceType": "AWS::EC2::Instance",
+            "Timestamp": "2025-12-02T14:44:29.535000+00:00",
+            "ResourceStatus": "CREATE_IN_PROGRESS",
+            "ResourceProperties": "{\"KeyName\":\"mini-project-key\",\"UserData\":\"IyEvYmluL2Jhc2gKIyAxLiBJbnN0YWxsIE1hcmlhREIgKFdvcmtzIGJlY2F1c2Ugb2YgTkFUIEdhdGV3YXkgaW4gTGF5ZXIgMSkKYXB0LWdldCB1cGRhdGUKYXB0LWdldCBpbnN0YWxsIC15IG1hcmlhZGItc2VydmVyCgojIDIuIENvbmZpZ3VyZSBNYXJpYURCIHRvIGxpc3RlbiBvbiBBTEwgSVBzICgwLjAuMC4wKQojIEJ5IGRlZmF1bHQsIGl0IG9ubHkgbGlzdGVucyBvbiBsb2NhbGhvc3QsIHdoaWNoIGJsb2NrcyB0aGUgV2ViQXBwLgpzZWQgLWkgJ3MvYmluZC1hZGRyZXNzLiovYmluZC1hZGRyZXNzID0gMC4wLjAuMC8nIC9ldGMvbXlzcWwvbWFyaWFkYi5jb25mLmQvNTAtc2VydmVyLmNuZgoKIyAzLiBSZXN0YXJ0IHRvIGFwcGx5IGNvbmZpZwpzeXN0ZW1jdGwgcmVzdGFydCBtYXJpYWRiCgojIDQuIENyZWF0ZSBEYXRhYmFzZSAmIFVzZXIgKENsYXNzaWMgU1FMIGNvbW1hbmRzKQojIFRoZSBkYXRhYmFzZSBhbmQgdXNlciBzaG91bGQgYmUgY3JlYXRlZCBtYW51YWxseSBvciBieSBhIHNlY3VyZSBhdXRvbWF0ZWQgcHJvY2Vzcy4KIyBUaGUgY3JlZGVudGlhbHMgc2hvdWxkIGJlIHBhc3NlZCB0byB0aGUgYXBwbGljYXRpb24gYXMgZW52aXJvbm1lbnQgdmFyaWFibGVzLgo=\",\"ImageId\":\"ami-0ecb62995f68bb549\",\"IamInstanceProfile\":\"mini-iam-EC2InstanceProfile-kLdhA7hU1oJ1\",\"SubnetId\":\"subnet-022e0d82a0e90ed08\",\"InstanceType\":\"t2.micro\",\"SecurityGroupIds\":[\"sg-09cd2c06b60713169\"],\"Tags\":[{\"Value\":\"db-server\",\"Key\":\"Name\"}]}"
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "66b80640-cf8d-11f0-a417-0eaca1b929e5",
+            "StackName": "mini-compute",
+            "OperationId": "f28fafb5-2c9a-4af7-89b2-96cf0d2e7547",
+            "LogicalResourceId": "mini-compute",
+            "PhysicalResourceId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "ResourceType": "AWS::CloudFormation::Stack",
+            "Timestamp": "2025-12-02T14:44:26.878000+00:00",
+            "ResourceStatus": "CREATE_IN_PROGRESS",
+            "ResourceStatusReason": "User Initiated"
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "EventId": "636ab000-cf8d-11f0-bf48-12b0e174962d",
+            "StackName": "mini-compute",
+            "LogicalResourceId": "mini-compute",
+            "PhysicalResourceId": "arn:aws:cloudformation:us-east-1:544360770302:stack/mini-compute/636b2530-cf8d-11f0-bf48-12b0e174962d",
+            "ResourceType": "AWS::CloudFormation::Stack",
+            "Timestamp": "2025-12-02T14:44:21.439000+00:00",
+            "ResourceStatus": "REVIEW_IN_PROGRESS",
+            "ResourceStatusReason": "User Initiated"
+        }
+    ]
+}

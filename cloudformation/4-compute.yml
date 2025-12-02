@@ -21,7 +21,7 @@ Resources:
   WebAppInstance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro
+      InstanceType: t3.micro
       ImageId: "{{resolve:ssm:/mini-ci-cd/latest-ami-id}}"
       KeyName: !Ref KeyName
 
@@ -60,7 +60,7 @@ Resources:
   DBInstance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro
+      InstanceType: t3.micro
       ImageId: "{{resolve:ssm:/mini-ci-cd/latest-ami-id}}"
       KeyName: !Ref KeyName
 
