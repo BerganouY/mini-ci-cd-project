@@ -48,6 +48,5 @@ jobs:
 
     - name: Run Unit Tests
       run: |
-        # This searches for any file named 'test_*.py' or '*_test.py'
-        # If you don't have tests yet, you can create a dummy one (see below)
+        export PYTHONPATH=$PYTHONPATH:.
         pytest
