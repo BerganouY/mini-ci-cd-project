@@ -97,6 +97,11 @@ jobs:
           DB_IP=$(aws cloudformation describe-stacks --stack-name mini-compute --query "Stacks[0].Outputs[?OutputKey=='DBPrivateIP'].OutputValue" --output text)
           echo "WEB_IP=$WEB_IP" >> $GITHUB_ENV
           echo "DB_IP=$DB_IP" >> $GITHUB_ENV
+          
+      - name: Wait for EC2 Instances to Boot
+        run: |
+          echo "Waiting 90 seconds for Ubuntu to boot and UserData scripts to finish installing MariaDB..."
+          sleep 90
 
       # --- APP DEPLOYMENT (Classic SSH with Fixes) ---
       - name: Deploy Code via SSH
